@@ -1,6 +1,7 @@
 #include <X11/Xlib.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(void) {
     Display *dpy;
@@ -11,6 +12,9 @@ int main(void) {
     XGCValues gcv;
     int xr, yr;
     unsigned int wr, hr, bwr, dr;
+
+    struct timespec tp1;
+    struct timespec tp2;
 
     dpy = XOpenDisplay(":0.0");
     XGetInputFocus(dpy, &focused, &revert_to);
@@ -24,11 +28,20 @@ int main(void) {
     XFlushGC(dpy, gc);
     XCopyArea(dpy, focused, focused, gc, xr, yr, wr, hr, 0, 0);
 
+    clock_gettime(CLOCK_REALTIME, &tp1);
+
     for(;;) {
       XEvent e;
-      XNextEvent(dpy, &e);
-      if (e.type == NoExpose)
+      while (XPending(dpy)) XNextEvent(dpy, &e);
+
+      usleep(5000);
+
+      clock_gettime(CLOCK_REALTIME, &tp2);
+      if (((tp2.tv_nsec - tp1.tv_nsec)/1000000 + 1000 * (tp2.tv_sec - tp1.tv_sec)) > 30)
         break;
+
+//      if (e.type == NoExpose)
+//        break;
     }
 
     exit(0);
