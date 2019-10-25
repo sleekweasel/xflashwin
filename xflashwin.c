@@ -23,22 +23,37 @@ int main(void) {
     gc = XCreateGC(dpy, focused, 0, NULL);
     XSetSubwindowMode(dpy, gc, IncludeInferiors);
 
-    gcv.function = GXcopyInverted;
-    XChangeGC(dpy, gc, GCFunction, &gcv);
-    XFlushGC(dpy, gc);
-    XCopyArea(dpy, focused, focused, gc, xr, yr, wr, hr, 0, 0);
-
-    clock_gettime(CLOCK_REALTIME, &tp1);
+    int invert=0;
+    long slept=0;
 
     for(;;) {
       XEvent e;
       while (XPending(dpy)) XNextEvent(dpy, &e);
 
+      if (invert == 0 || slept > 29) {
+        switch (invert++) {
+          case 1:
+            gcv.function = GXcopyInverted;
+            break;
+          case 2:
+//            gcv.function = GXcopyInverted;
+//            // gcv.function = GXcopy;
+//            break;
+//          case 3:
+            exit(0);
+        }
+        XChangeGC(dpy, gc, GCFunction, &gcv);
+        XFlushGC(dpy, gc);
+        XCopyArea(dpy, focused, focused, gc, xr, yr, wr, hr, 0, 0);
+
+        clock_gettime(CLOCK_REALTIME, &tp1);
+        slept=0;
+      }
+
       usleep(5000);
 
       clock_gettime(CLOCK_REALTIME, &tp2);
-      if (((tp2.tv_nsec - tp1.tv_nsec)/1000000 + 1000 * (tp2.tv_sec - tp1.tv_sec)) > 15)
-        break;
+      slept = ((tp2.tv_nsec - tp1.tv_nsec)/1000000 + 1000 * (tp2.tv_sec - tp1.tv_sec));
 
 //      if (e.type == NoExpose)
 //        break;
