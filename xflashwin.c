@@ -37,7 +37,7 @@ int main(void) {
       usleep(5000);
 
       clock_gettime(CLOCK_REALTIME, &tp2);
-      if (((tp2.tv_nsec - tp1.tv_nsec)/1000000 + 1000 * (tp2.tv_sec - tp1.tv_sec)) > 30)
+      if (((tp2.tv_nsec - tp1.tv_nsec)/1000000 + 1000 * (tp2.tv_sec - tp1.tv_sec)) > 15)
         break;
 
 //      if (e.type == NoExpose)
