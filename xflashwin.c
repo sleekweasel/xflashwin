@@ -36,10 +36,10 @@ int main(void) {
             gcv.function = GXcopyInverted;
             break;
           case 2:
-//            gcv.function = GXcopyInverted;
-//            // gcv.function = GXcopy;
-//            break;
-//          case 3:
+            gcv.function = GXcopyInverted;
+            // gcv.function = GXcopy;
+            break;
+          case 3:
             exit(0);
         }
         XChangeGC(dpy, gc, GCFunction, &gcv);
